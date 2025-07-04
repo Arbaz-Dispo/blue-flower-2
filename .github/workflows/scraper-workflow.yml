@@ -1,0 +1,47 @@
+name: Ohio Business Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      control_number: 
+        description: 'Business Control Number'
+        required: true
+      uuid:
+        description: 'A unique ID for this specific request'
+        required: true
+
+jobs:
+  scrape:
+    runs-on: windows-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install uv
+      run: pip install uv
+
+    - name: Install dependencies with uv (fresh install)
+      run: uv pip install -r requirements.txt --system
+
+    - name: Run scraper
+      run: python ohio_scraper.py ${{ github.event.inputs.control_number }}
+
+    - name: Upload business info artifact
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: business-info-${{ github.event.inputs.uuid }}
+        path: business_info_${{ github.event.inputs.control_number }}.json
+
+    - name: Upload logs and screenshots
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: scraper-logs-${{ github.event.inputs.uuid }}
+        path: logs/ 
