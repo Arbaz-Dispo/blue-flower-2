@@ -22,8 +22,8 @@ def scrape_business_info(control_number):
                 print(f"Captcha handling exceeded {timeout_seconds} seconds - exiting")
                 sys.exit(1)
             try:
-                sb.cdp.scroll_into_view('div[id*="AwTSQ5"]')
-                rect = sb.cdp.get_gui_element_rect('div[id*="AwTSQ5"]')
+                sb.cdp.scroll_into_view('div[class="main-content"]')
+                rect = sb.cdp.get_gui_element_rect('div[class="main-content"]')
                 x = rect['x'] + 35
                 y = rect['y'] + 20
                 sb.cdp.gui_click_x_y(x, y)
